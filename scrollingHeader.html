@@ -1,0 +1,100 @@
+<html>
+<head>
+    <title>Scroller</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <style type="text/css">
+        .scroll-container{
+            overflow: hidden;
+            position: relative;
+        }
+            .scroll-container > * {
+                display: none;
+                position: absolute;
+                top: -9999px;
+                width: 100%;
+                -webkit-transition: top 0.5s ease-in;  
+                transition: top 0.5s ease-in; 
+            }
+            .scroll-container > .scroll-container-active{
+                display: block;
+            }
+            .scroll-container > .scroll-container-prev{
+                display: block;
+            }
+            .scroll-container > .scroll-container-next{
+                display: block;
+            }
+
+        /*Helpers*/    
+        .scroll-text-simple{
+            text-align: center;
+        }
+            .scroll-text-simple p{
+                padding:0;
+                margin:0;
+                top: 50%;
+                -webkit-transform: translateY(-50%);
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+                position: relative;
+            }
+
+        /*Base Theme*/
+        .scroll-base-theme{
+            border:1px solid #888;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="element scroll-text-simple scroll-base-theme" data-height="30" data-interval="3000">
+        <div><p>Lorem Ipsum 1</p></div>
+        <div><p>Lorem Ipsum 2</p></div>
+        <div><p>Lorem Ipsum 3</p></div>
+        <div><p>Lorem Ipsum 4</p></div>
+        <div><p>Lorem Ipsum 5</p></div>
+        <div><p>Lorem Ipsum 6</p></div>
+    </div><!--.container-->
+</body>
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function(){
+
+        $.fn.scroller = function(){
+            var element = $(this)
+            var height = element.data('height');
+            element.addClass('scroll-container').css('height',height+'px');
+            element.after('<style type="text/css">.scroll-container > * { height: '+height+'px !important; } .scroll-container-active{ top: 0px !important; } .scroll-container-prev{ top: -'+height+'px !important; } .scroll-container-next{ top: '+height+'px !important; }</style>')
+            function calculateScroll(element,active){
+                var interval = element.data('interval')
+                var children = element.children();
+                var total = children.length - 1;
+                var active = active || 0;
+                var prev = (active === 0 ? total : active - 1);
+                var next = (active === total ? 0 : active + 1);
+
+                $('.scroll-container-active').removeClass('scroll-container-active');
+                $(children[active]).addClass('scroll-container-active');
+                $('.scroll-container-prev').removeClass('scroll-container-prev');
+                $(children[prev]).addClass('scroll-container-prev');
+                $('.scroll-container-next').removeClass('scroll-container-next');
+                $(children[next]).addClass('scroll-container-next');
+
+                active = (active === total ? 0 : active+1)
+                setTimeout(function(){calculateScroll(element,active)}, interval);
+            };
+            calculateScroll(element);
+        };
+
+        $('.element').scroller();
+
+    });
+
+</script>
+
+</html>
